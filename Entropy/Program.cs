@@ -10,41 +10,70 @@ namespace Entropy
 
             for (int i = 0; i < input.Length; i++)
             {
-                int unique = 0;
+                int count = 1;
 
-                for (int j = 0; j < input.Length; j++)
+                while (i + 1 < input.Length && input[i] == input[i + 1])
                 {
-                    if (input[i] == input[j])
-                    {
-                        unique++;
-                    }
-                    compressedString += (input[i] + unique);
+                    count++;
+                    i++;
                 }
+                compressedString += input[i] + count.ToString();
             }
             return compressedString;
         }
         public static string DeCompressor(string input)
         {
             string compressedString = "";
-            for (int i = 1; i < input.Length; i+=2)
+            
+
+            for (int i = 0; i < input.Length; i+= 2)
             {
+                char character = input[i];
+                int digit = (int)char.GetNumericValue(input[i + 1]);
+
+                for (int j = 0; j < digit; j++)
+                {
+                    compressedString += character;
+                }    
+
                 
             }
             return compressedString;
         }
 
+        static Random rand = new Random();
+
+        static string CreateRandomString(int length)
+        {
+            string randomString = "";
+
+            for (int i = 0; i < length; i++)
+            {
+                int randomCharacter = rand.Next('A', 'z' + 1);
+                randomString += (char)randomCharacter;
+            }
+
+            return randomString;
+        }
+
+        static void TestEntropy(int iterations, int length)
+        {
+            for (int i = 0; i < iterations; i++)
+            {
+                string input = CreateRandomString(length);
+                string compressed = Compressor(input);
+                string deCompressed = DeCompressor(compressed);
+
+                if (deCompressed != input)
+                {
+                    throw new Exception("Did not work");
+                }
+            }
+        }
+
         static void Main(string[] args)
         {
-            Console.WriteLine("Give a string!");
-            string input = Console.ReadLine();
-
-            Console.WriteLine(Compressor(input));
-
-            Console.WriteLine("Give a string and numbers ex: a2b1c4");
-            input = Console.ReadLine(); 
-
-            Console.WriteLine(DeCompressor(input));
-
+            TestEntropy(1000, 15);
         }
     }
 }
